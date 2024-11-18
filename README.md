@@ -1,4 +1,4 @@
-# Smart Summary & Translation Chrome Extension
+# SmartOne: AI Summarisation & Translation Chrome Extension
 
 A powerful Chrome Extension that leverages Chrome's built-in AI capabilities to provide intelligent text summarization and translation. This tool helps users quickly understand and translate content across the web without leaving their current page.
 

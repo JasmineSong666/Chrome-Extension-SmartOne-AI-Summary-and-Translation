@@ -1,5 +1,5 @@
 {
-    "name": "Smart Summary & Translation",
+    "name": "SmartOne: AI Summarisation & Translation",
     "version": "1.0",
     "manifest_version": 3,
     "description": "Provides a customizable summary or translation of the selected text on web pages.",
@@ -7,7 +7,8 @@
       "service_worker": "service-worker.js"
     },
     "trial_tokens": [
-    "Ajg/mUZl95Toi8nKXNNKXBm5jHPkXVc9RgykZ+cz79zH3NIObwqBTuLZQq03tvtpp73KGHsiktxdL2V+ZER/Lg0AAABzeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vaHBjbWNkaW1nY21sYW9ubGJlamVlYnBpb2RjaGpsZGwiLCJmZWF0dXJlIjoiQUlTdW1tYXJpemF0aW9uQVBJIiwiZXhwaXJ5IjoxNzUzMTQyNDAwfQ=="
+    "An3KRa/pW7ra9k6f9zRJcrDeTT8b2/2cNC33FDoRN+aTo54slUH9p+Ard9A+36QRbdV/7OTCdXjoPZuDbrZg+gsAAABzeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vZ2dlZWZrbWlhYWlpZ2tsZGZoa3BqZ2VtcGZkZ21jYW8iLCJmZWF0dXJlIjoiQUlTdW1tYXJpemF0aW9uQVBJIiwiZXhwaXJ5IjoxNzUzMTQyNDAwfQ==",
+    "AsT62WEr51aKJRDOFG4szyl15dc+TyXGe04vrMTLA6UlvhwPaRGQ3IhoOqm0TiIXvpJuTbTkeeaPEJkZukbcTgMAAABveyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vZ2dlZWZrbWlhYWlpZ2tsZGZoa3BqZ2VtcGZkZ21jYW8iLCJmZWF0dXJlIjoiVHJhbnNsYXRpb25BUEkiLCJleHBpcnkiOjE3NTMxNDI0MDB9"
     ],
     "icons": {
       "16": "images/icon16.png",
