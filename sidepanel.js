@@ -14,6 +14,7 @@ async function chromeAISummarizeAndTranslate(textToSummarize, shouldTranslate = 
     // Update title based on action
     titleElement.textContent = shouldTranslate ? "Summary and Translation" : "Summary";
     outputElement.innerText = "Processing...";
+    outputElement.classList.add('processing');
     
     // Show/hide language selector based on translation mode, not processing state
     document.getElementById('language-selector-container').style.display = 
@@ -49,8 +50,10 @@ async function chromeAISummarizeAndTranslate(textToSummarize, shouldTranslate = 
         if (shouldTranslate) {
             await handleTranslation(result);
         } else {
-            outputElement.innerText = result;
-            document.getElementById('language-selector-container').style.display = 'none';
+            outputElement.innerHTML = `
+                <div class="section-title">Summary:</div>
+                <div class="content-text">${result}</div>
+            `;
         }
     } catch (error) {
         console.error('Processing error:', error);
@@ -58,6 +61,8 @@ async function chromeAISummarizeAndTranslate(textToSummarize, shouldTranslate = 
         // Keep language selector visible if in translation mode
         document.getElementById('language-selector-container').style.display = 
             shouldTranslate ? 'block' : 'none';
+    } finally {
+        outputElement.classList.remove('processing');
     }
 }
 
@@ -126,6 +131,7 @@ document.getElementById('language-selector').addEventListener('change', async (e
         .trim();
     
     outputElement.innerText = "Processing...";
+    outputElement.classList.add('processing');
     await handleTranslation(originalSummary, e.target.value);
 });
 

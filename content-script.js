@@ -22,8 +22,8 @@ class PopupManager {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         
-        const x = rect.right + window.scrollX;
-        const y = rect.bottom + window.scrollY;
+        const x = event.pageX + 5;
+        const y = event.pageY + 5;
   
         this.showPopup(x, y, text);
       } else {
@@ -90,10 +90,10 @@ class PopupManager {
       let finalY = y;
   
       if (x + popupRect.width > viewportWidth) {
-        finalX = viewportWidth - popupRect.width - 20;
+        finalX = viewportWidth - popupRect.width - 10;
       }
       if (y + popupRect.height > viewportHeight) {
-        finalY = y - popupRect.height - 20;
+        finalY = y - popupRect.height - 10;
       }
   
       popup.style.left = `${finalX}px`;
