@@ -3,35 +3,66 @@
 A powerful Chrome Extension that leverages Chrome's built-in AI capabilities to provide intelligent text summarization and translation. This tool helps users quickly understand and translate content across the web without leaving their current page.
 
 ## Problem Statement
-In today's fast-paced digital world, users often encounter lengthy articles and content in foreign languages. The challenges include:
-- Information overload with too much content to read
-- Language barriers preventing access to global content
-- Time constraints in digesting lengthy articles
-- Context switching between different tools for summarization and translation
+While browsing text based websites, especially review-heavy websites (like Yelp, Booking, or Airbnb), users often face these challenges:
+- Need to summarise specific sections that they can select freely rather than entire pages
+- Long, detailed reviews that take too much time to read
+- Language barriers for non-native English speakers
+- Difficulty in quickly grasping key points from multiple reviews
 
-Our extension addresses these challenges by providing an all-in-one solution that's seamlessly integrated into the browsing experience.
+Although many extensions offer whole-page summarization, Smart Summary stands out by letting you:
+- Focus on specific content you care about - Perfect for individual reviews or comments
+- Get instant translations of the summary in their preferred language
+- Customize summaries to your exact needs
+- Maintain customization options when switching text selections.
 
-## Features
-- **Smart Text Summarization**: Generate concise summaries using Chrome's AI
-- **Multi-language Translation**: Support for 9 major languages
-- **Customizable Options**:
-  - Summary types: Key Points, TL;DR, Teaser, Headline
-  - Format options: Plain Text, Markdown
-  - Length variations: Short, Medium, Long
-- **Convenient UI**:
-  - Context menu integration
+## Key Features
+- **Selective Text Processing**: 
+  - Summarize or translate any selected text portion
+  - Perfect for part of the page, like long reviews, comments, or articles
+
+- **Smart Text Summarization**:
+  - Generate concise summaries using Chrome's AI
+  - Customizable Summary Options  
+    - Summary types: 
+      - Key Points
+      - TL;DR
+      - Teaser
+      - Headline
+  - Format options:
+    - Plain Text 
+    - Markdown
+  - Length variations: 
+    - Short
+    - Medium
+    - Long
+
+- **Multi-language Translation**:
+  - Support for 9 major languages
+  - Remembers your language preference
+  - Combined summarization and translation in one click
+
+- **User-Friendly Interface**:
   - Quick-access popup on text selection
+  - Right-click context menu integration
   - Side panel display for results
-- **Real-time Processing**: Instant summarization and translation
+  - Persistent settings between uses
 
 ## Installation
 1. Clone this repository
 ```bash
-git clone https://github.com/yourusername/smart-summary-extension.git
+git clone https://github.com/JasmineSong666/Chrome-Extension-SmartOne-AI-Summary-and-Translation.git
 ```
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the extension directory
+
+## How to Use
+1. Select any text on a webpage
+2. Choose your action:
+   - Click the popup buttons that appear
+   - Use the right-click context menu
+3. View results in the side panel
+4. Customize summary options and language as needed
 
 ## API Implementation Details
 ### APIs Used
@@ -39,40 +70,31 @@ git clone https://github.com/yourusername/smart-summary-extension.git
 - Chrome Translator API
 
 ### Summarizer API
-```javascript
-const summarizer = await ai.summarizer.create({
-type, // Key Points, TL;DR, etc.
-format, // Plain text or Markdown
-length // Short, Medium, Long
-});
-```
-The Summarization API processes text content and generates concise summaries based on user preferences. It handles:
+- Real-time text processing with customizable outputs 
+- Persistent format and length preferences 
+
+Use Summarizer API processes text content and generates concise summaries based on user preferences. It handles:
 - Content analysis
 - Key information extraction
 - Format conversion
 - Length optimization
 
 ### Translator API
-```javascript
-const translator = await translation.createTranslator({
-sourceLanguage: 'en',
-targetLanguage: targetLang
-});
-```
+- Seamless integration with summarization 
+- Smart language preference management 
+- Asynchronous processing for smooth user experience
 
-## Usage
-1. Select any text on a webpage
-2. Either:
-   - Click the popup buttons that appear
-   - Use the right-click context menu
-3. View the summary/translation in the side panel
+Use Translator API to translate text content into different languages. It handles:
+- Language detection
+- Text translation
+- Language switching
 
 ## Development
 This extension is built using:
 - HTML/CSS for the UI
 - JavaScript for functionality
-- Chrome Extension APIs
-- Chrome's built-in AI capabilities
+- Chrome Summarizer API for intelligent text processing
+- Chrome Translator API for accurate translations
 
 ## Testing Instructions
 1. Load the extension in developer mode
@@ -126,5 +148,4 @@ MIT License - See LICENSE file for details
 
 ## Acknowledgments
 - Chrome Extensions team for the excellent API documentation
-- Beta testers for valuable feedback
 - Open source community for inspiration and support
