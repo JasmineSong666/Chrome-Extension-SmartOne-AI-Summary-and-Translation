@@ -2,7 +2,7 @@
     "name": "Smart Summary & Translation",
     "version": "1.0",
     "manifest_version": 3,
-    "description": "Provides a summary of the selected text",
+    "description": "Provides a customizable summary or translation of the selected text on web pages.",
     "background": {
       "service_worker": "service-worker.js"
     },
