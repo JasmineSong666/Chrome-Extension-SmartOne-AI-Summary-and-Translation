@@ -90,50 +90,214 @@ Use Translator API to translate text content into different languages. It handle
 - Language switching
 
 ## Development
-This extension is built using:
-- HTML/CSS for the UI
-- JavaScript for functionality
-- Chrome Summarizer API for intelligent text processing
-- Chrome Translator API for accurate translations
+1. **Foundation**
+   - Built using vanilla JavaScript for core functionality
+   - Utilized Chrome's Extension Manifest V3
+   - Integrated Chrome's built-in AI APIs for summarization and translation
+     - Chrome Summarizer API for intelligent text processing
+     - Chrome Translator API for accurate translations
+
+2. **Architecture**
+   - content-script.js for user interaction and text selection
+   - service-worker.js for background processes and context menu integration
+   - sidepanel.js and sidepanel.html for displaying results and user controls
+   - style folder to store CSS files: popup.css and sidepanel.css.
+   - manifest.json and images folder in root directory
+
+3. **UI/UX Design**
+   - HTML/CSS/JavaScript for the UI
+   - Implemented a floating popup for quick actions
+   - Created a responsive side panel with customization options
+   - Designed with accessibility and user experience
 
 ## Testing Instructions
 1. Load the extension in developer mode
 2. Select any text on a webpage
-3. Test both summarization and summarization & translation features
+3. Test both summarization and summarization & translation features by clicking the popup buttons or right-click context menu
 4. Try different summarization options
 5. Test multiple target languages
 
-## Development Journey and Challenges
+## Technical Challenges and Solutions
 
-### Technical Challenges Overcome
-1. **API Integration Complexity**
-   - Challenge: Handling different API states and download progress
-   - Solution: Implemented robust state management and progress indicators
+### Challenge 1: Managing Chrome AI API States
+The Chrome AI APIs (Summarizer and Translator) can be in different states: 'readily' available, needs downloading, or not available.
 
-2. **UI/UX Design**
-   - Challenge: Creating non-intrusive yet accessible controls
-   - Solution: Developed a context-aware popup system with side panel integration
+### Solution:
+Implemented a robust state checking and handling system:
+```javascript
+javascript:sidepanel.js
+// Check API availability and handle different states
+const canSummarize = await ai.summarizer.capabilities();
+if (!canSummarize || canSummarize.available === 'no') {
+outputElement.innerText = 'Text Summarizer API not available.';
+return;
+}
+let summarizer;
+if (canSummarize.available === 'readily') {
+summarizer = await ai.summarizer.create({ type, format, length });
+} else {
+summarizer = await ai.summarizer.create({ type, format, length });
+// Show download progress to user
+summarizer.addEventListener('downloadprogress', (e) => {
+outputElement.innerText = Loading summarizer: ${Math.round((e.loaded / e.total) * 100)}%;
+});
+await summarizer.ready;
+}
+```
+### Challenge 2: Language Package Download Handling
+Users might not have required language packages installed for translation.
 
-3. **Performance Optimization**
-   - Challenge: Managing large text processing without affecting browser performance
-   - Solution: Implemented efficient text handling and progressive loading
+### Solution:
+Implemented clear user feedback and download progress monitoring:
+```javascript
+javascript:sidepanel.js
+async function handleTranslation(textToTranslate, targetLang = null) {
+try {
+const canTranslate = await translation.canTranslate(languagePair);
+if (canTranslate === 'no') {
+outputElement.innerText = textToTranslate + '\n\nTranslation not available for this language.';
+return;
+}
+let translator;
+if (canTranslate === 'readily') {
+translator = await translation.createTranslator(languagePair);
+} else {
+translator = await translation.createTranslator(languagePair);
+translator.addEventListener('downloadprogress', (e) => {
+outputElement.innerText = Loading translator: ${Math.round((e.loaded / e.total) * 100)}%;
+});
+await translator.ready;
+}
+} catch (error) {
+outputElement.innerText = textToTranslate + '\n\nDownloading the language package, please refresh the page!';
+}
+}
+```
 
-4. **Error Handling**
-   - Challenge: Graceful handling of API failures and network issues
-   - Solution: Added comprehensive error handling with user-friendly messages
+### Challenge 3: Creating an Intuitive Selection Popup
+Needed to create a non-intrusive popup with direct action buttons after text selection.
 
-### Lessons Learned
-1. Chrome's AI APIs require careful state management for optimal user experience
-2. Progressive enhancement is crucial for handling varying network conditions
-3. User interface design needs to balance functionality with simplicity
-4. Error handling is as important as core functionality
+### Solution:
+Implemented a floating popup that appears near the selected text:
+```javascript   
+javascript:content-script.js
+showPopup(x, y, text) {
+this.removePopup();
+const popup = document.createElement('div');
+popup.className = 'smart-summary-popup';
+popup.innerHTML = <div class="popup-buttons-container"> <button class="smart-summary-button" data-action="summarize-text">Summarise</button> <button class="smart-summary-button" data-action="summarize-and-translate">Summarise & Translate</button> </div> ;
+// Position popup near selection
+const popupRect = popup.getBoundingClientRect();
+const viewportWidth = window.innerWidth;
+const viewportHeight = window.innerHeight;
+let finalX = x;
+let finalY = y;
+// Ensure popup stays within viewport
+if (x + popupRect.width > viewportWidth) {
+finalX = viewportWidth - popupRect.width - 10;
+}
+if (y + popupRect.height > viewportHeight) {
+finalY = y - popupRect.height - 10;
+}
+popup.style.left = ${finalX}px;
+popup.style.top = ${finalY}px;
+}
+```
+### Challenge 4: Maintaining User Preferences
+Needed to persist user's customization options between different text selections.
 
-## Future Enhancements
-- History tracking for previous summaries
-- Additional language support
-- Custom summarization templates
-- Export and sharing capabilities
-- Offline mode support 
+### Solution:
+Implemented state management using Chrome's storage API and local variables:
+```javascript
+javascript:sidepanel.js
+let currentTextToSummarize = '';
+let currentShouldTranslate = false;
+let lastSelectedLanguage = 'zh';
+// Storage listener to maintain preferences
+chrome.storage.session.onChanged.addListener(async (changes) => {
+const textChange = changes['lastTextToSummarize'];
+const actionChange = changes['action'];
+if (textChange?.newValue || actionChange?.newValue) {
+chrome.storage.session.get(['lastTextToSummarize', 'action', 'lastLanguage'], (data) => {
+if (data.lastTextToSummarize) {
+const shouldTranslate = data.action === 'summarize-and-translate';
+if (data.lastLanguage) {
+lastSelectedLanguage = data.lastLanguage;
+}
+chromeAISummarizeAndTranslate(data.lastTextToSummarize, shouldTranslate);
+}
+});
+}
+});
+```
+### Challenge 5: Real-time Updates in Side Panel
+Needed to ensure the side panel updates immediately when new text is selected.
+
+### Solution:
+Implemented a message passing system between content script and service worker:
+```javascript
+javascript:service-worker.js
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+if (message.action === 'storeSelection') {
+storeSelection(message.data)
+.then(() => sendResponse({ success: true }))
+.catch(error => sendResponse({ success: false, error: error.message }));
+return true;
+}
+if (message.action === 'openSidePanel') {
+chrome.sidePanel.open({ tabId: sender.tab.id })
+.then(() => sendResponse({ success: true }))
+.catch(error => sendResponse({ success: false, error: error.message }));
+return true;
+}
+});
+```
+These solutions not only addressed the technical challenges but also enhanced the overall user experience by providing:
+- Clear feedback during API operations
+- Seamless text selection and processing
+- Persistent user preferences
+- Smooth real-time updates
+
+The combination of these solutions creates a robust and user-friendly extension that handles complex operations while maintaining a simple and intuitive interface.
+
+## Accomplishments that I'm proud of
+1. Created my first Chrome Extension that is fully functional and can address real-world problems I ran into when browsing websites
+2. Developed an intuitive user interface that doesn't disrupt browsing using popup and side panel
+3. Successfully integrated Chrome's cutting-edge AI APIs and handled different states
+4. Implemented robust error handling and progress indicators
+
+## What I learned
+1. **Technical Skills**
+   - Deep understanding of Chrome Extension architecture
+   - Practical experience with Chrome's AI APIs
+   - Popup and side panel UI design and implementation and how to use javascript to control the them
+   - Advanced error handling in asynchronous operations
+
+2. **Project Management**
+   - Importance of modular code structure
+   - Value of comprehensive error logging
+
+## What's next for SmartOne
+1. **Feature Enhancements**
+   - History tracking for previous summaries
+   - Additional language support
+   - Custom summarization templates
+   - Export and sharing capabilities
+   - Offline mode support
+
+2. **Technical Improvements**
+   - Enhanced error recovery mechanisms
+   - Improved performance optimization
+   - Better memory management
+   - Advanced caching strategies
+
+3. **User Experience**
+   - Customizable keyboard shortcuts
+   - More summary format options
+   - Enhanced accessibility features
+   - User preference synchronization
+
+The journey of SmartOne is just beginning, and I'm excited to continue evolving it based on user feedback and emerging technologies.
 
 ## Contributing
 We welcome contributions! Please follow these steps:
